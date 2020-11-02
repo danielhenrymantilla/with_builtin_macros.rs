@@ -1,0 +1,41 @@
+[lib]
+path = "frontend.rs"
+
+[package]
+name = "with_builtin_macros"
+version = "0.0.3"  # Keep in sync with version at the bottom
+authors = [
+    "Daniel Henry-Mantilla <daniel.henry.mantilla@gmail.com>",
+]
+edition = "2018"
+
+license = "Zlib OR MIT OR Apache-2.0"
+
+documentation = "https://docs.rs/with_builtin_macros"
+repository = "https://github.com/danielhenrymantilla/with_builtin_macros.rs"
+homepage = "https://crates.io/crates/with_builtin_macros"
+
+readme = "README.md"
+
+description = """
+Helper for macro_rules authors to chain their macros with builtin ones (such
+as `env!`, `include!`, or `concat_idents!`).
+"""
+keywords = [
+    "with",
+    "macro",
+    "callback",
+    "preprocessor",
+    "concat_idents",
+]
+categories = [
+    "rust-patterns",
+]
+
+[dependencies.proc_macros]
+package = "with_builtin_macros-proc_macros"
+version = "0.0.3"  # Keep in sync with `src/Cargo.toml`
+path = "src"
+
+[workspace]
+members = ["src"]
