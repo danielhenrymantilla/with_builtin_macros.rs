@@ -1,4 +1,5 @@
 use ::with_builtin_macros::with_builtin;
+use ::with_builtin_macros::with_eager_expansions;
 
 macro_rules! count_tts {(
     $($tt:tt)*
@@ -25,3 +26,20 @@ with_builtin!(let $fname = concat_idents!(ma, in) in {
         }
     }
 });
+
+macro_rules! foo {(
+    $($Variant:ident),* $(,)?
+) => (
+    with_eager_expansions! {
+        enum Foo {
+            $(
+                #[doc = #{stringify!($Variant)}]
+                $Variant,
+            )*
+        }
+    }
+)}
+
+foo! {
+    Foo, Bar, Baz
+}
