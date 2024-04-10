@@ -191,3 +191,44 @@ pub mod builtin_macros {
     /// ```
     pub mod include_str_from_root {}
 }
+
+
+/// Alternative to [`with_builtin!`] with more convenient syntax.
+///
+/// Within the scope of the macro call, any
+/// [built-in macro][Self::builtin_macros] invocation surrounded in `${ ... }`
+/// will be eagerly expanded.
+///
+/// ## Example
+///
+/// ```rust
+/// use ::with_builtin_macros::with_eager_expansions;
+///
+/// with_eager_expansions! {
+///              // "Eagerly expand the built-in macro inside please"
+///              //          vv                              v
+///     expects_hello_world!(${ concat!("Hello, ", "World!") });
+/// }
+///
+/// // where:
+/// macro_rules! expects_hello_world {
+///     ("Hello, World!") => ();
+/// } use expects_hello_world;
+/// ```
+///
+/// ### DIY `paste!`
+///
+/// For instance, `paste!` functionality can be emulated by doing:
+///
+/// ```rust
+/// use ::with_builtin_macros::with_eager_expansions;
+///
+/// with_eager_expansions! {
+///     fn ${concat_idents!(look, ma, no, paste)} () -> i32 {
+///         42
+///     }
+/// }
+///
+/// assert_eq!(lookmanopaste(), 42);
+/// ```
+pub use ::proc_macros::with_eager_expansions;

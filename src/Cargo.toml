@@ -4,7 +4,7 @@ path = "lib.rs"
 
 [package]
 name = "with_builtin_macros-proc_macros"
-version = "0.0.3"  # Keep in sync with `../Cargo.toml`.
+version = "0.1.0-rc1"  # Keep in sync with `../Cargo.toml`.
 authors = ["Daniel Henry-Mantilla <daniel.henry.mantilla@gmail.com>"]
 edition = "2018"
 

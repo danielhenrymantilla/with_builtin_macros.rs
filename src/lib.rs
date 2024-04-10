@@ -121,7 +121,7 @@ fn with_builtin (input: TokenStream)
 {
     let Input {
         metavar,
-        macro_invocation: (builtin_macro, macro_input),
+        macro_invocation: MacroInvocation { builtin_macro, macro_input },
         template,
     } = parse_macro_input!(input);
     let input_span = macro_input.span();
@@ -140,7 +140,7 @@ fn with_builtin (input: TokenStream)
 
 struct Input {
     metavar: Ident,
-    macro_invocation: (BuiltinMacro, TokenStream2),
+    macro_invocation: MacroInvocation,
     template: TokenStream2,
 }
 
@@ -152,15 +152,32 @@ impl Parse for Input {
         let _:             Token![ $   ]        = input.parse()?;
         let metavar:               Ident        = input.parse()?;
         let _:             Token![ =   ]        = input.parse()?;
-        let builtin_macro:         BuiltinMacro = input.parse()?;
-        let _:             Token![ !   ]        = input.parse()?;
-        let macro_input = { let g: Group        = input.parse()?; g.stream() };
+        let macro_invocation:   MacroInvocation = input.parse()?;
         let _:             Token![ in  ]        = input.parse()?;
         let template;              braced!(template in input);
         Ok(Input {
             metavar,
-            macro_invocation: (builtin_macro, macro_input),
+            macro_invocation,
             template: template.parse()?,
+        })
+    }
+}
+
+struct MacroInvocation {
+    builtin_macro: BuiltinMacro,
+    macro_input: TokenStream2,
+}
+
+impl Parse for MacroInvocation {
+    fn parse(input: ParseStream<'_>)
+      -> Result<MacroInvocation>
+    {
+        let builtin_macro:         BuiltinMacro = input.parse()?;
+        let _:             Token![ !   ]        = input.parse()?;
+        let macro_input = { let g: Group        = input.parse()?; g.stream() };
+        Ok(Self {
+            builtin_macro,
+            macro_input,
         })
     }
 }
@@ -303,6 +320,68 @@ fn map_replace (
             | (None, _) => break,
 
             | (tt, _) => ret.extend(tt),
+        }
+    }
+    ret
+}
+
+#[proc_macro] pub
+fn with_eager_expansions(input: TokenStream)
+  -> TokenStream
+{
+    map_replace_eager_expansions(input.into()).into()
+}
+
+
+fn map_replace_eager_expansions (
+    template: TokenStream2,
+) -> TokenStream2
+{
+    use ::proc_macro2::{*, TokenTree as TT};
+    let mut tokens = template.into_iter().peekable();
+    let mut ret = TokenStream2::new();
+    loop {
+        let tt = tokens.next();
+        match (&tt, tokens.peek()) {
+            // ${ ... }
+            | (
+                &Some(TT::Punct(ref dollar)),
+                Some(&TT::Group(ref g)),
+            )   if dollar.as_char() == '$'
+                && g.delimiter() == Delimiter::Brace
+            => {
+                if let Ok(MacroInvocation { builtin_macro, macro_input }) =
+                    parse2(g.stream())
+                {
+                    drop(tokens.next());
+                    let input_span = macro_input.span();
+                    let expansion = match builtin_macro.call_on(macro_input) {
+                        | Ok(it) => it,
+                        | Err(mut err) => {
+                            if format!("{:?}", err.span())
+                            == format!("{:?}", Span::call_site())
+                            {
+                                err = Error::new(input_span, &err.to_string());
+                            }
+                            return err.to_compile_error().into();
+                        },
+                    };
+                    ret.extend(expansion);
+                } else {
+                    ret.extend(tt);
+                }
+            },
+
+            | (&Some(TT::Group(ref group)), _) => {
+                ret.extend(Some(TT::Group(Group::new(
+                    group.delimiter(),
+                    map_replace_eager_expansions(group.stream()),
+                ))));
+            },
+
+            | (None, _) => break,
+
+            | (_, _) => ret.extend(tt),
         }
     }
     ret
