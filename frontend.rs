@@ -196,7 +196,7 @@ pub mod builtin_macros {
 /// Alternative to [`with_builtin!`] with more convenient syntax.
 ///
 /// Within the scope of the macro call, any
-/// [built-in macro][Self::builtin_macros] invocation surrounded in `${ ... }`
+/// [built-in macro][`builtin_macros`] invocation surrounded in `${ ... }`
 /// will be eagerly expanded.
 ///
 /// ## Example
@@ -205,7 +205,7 @@ pub mod builtin_macros {
 /// use ::with_builtin_macros::with_eager_expansions;
 ///
 /// with_eager_expansions! {
-///              // "Eagerly expand the built-in macro inside please"
+///              // "Eagerly expand the built-in macro inside, please"
 ///              //          vv                              v
 ///     expects_hello_world!(${ concat!("Hello, ", "World!") });
 /// }
