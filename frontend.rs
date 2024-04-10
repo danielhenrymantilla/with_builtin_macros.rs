@@ -207,7 +207,7 @@ pub mod builtin_macros {
 /// with_eager_expansions! {
 ///              // "Eagerly expand the built-in macro inside, please"
 ///              //          vv                              v
-///     expects_hello_world!(${ concat!("Hello, ", "World!") });
+///     expects_hello_world!(#{ concat!("Hello, ", "World!") });
 /// }
 ///
 /// // where:
@@ -224,7 +224,7 @@ pub mod builtin_macros {
 /// use ::with_builtin_macros::with_eager_expansions;
 ///
 /// with_eager_expansions! {
-///     fn ${concat_idents!(look, ma, no, paste)} () -> i32 {
+///     fn #{concat_idents!(look, ma, no, paste)} () -> i32 {
 ///         42
 ///     }
 /// }

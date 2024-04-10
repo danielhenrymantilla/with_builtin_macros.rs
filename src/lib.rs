@@ -347,7 +347,7 @@ fn map_replace_eager_expansions (
             | (
                 &Some(TT::Punct(ref dollar)),
                 Some(&TT::Group(ref g)),
-            )   if dollar.as_char() == '$'
+            )   if dollar.as_char() == '#'
                 && g.delimiter() == Delimiter::Brace
             => {
                 if let Ok(MacroInvocation { builtin_macro, macro_input }) =
