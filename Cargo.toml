@@ -3,7 +3,7 @@ path = "frontend.rs"
 
 [package]
 name = "with_builtin_macros"
-version = "0.1.0-rc3"  # Keep in sync with version at the bottom
+version = "0.1.0"  # Keep in sync with version at the bottom
 authors = [
     "Daniel Henry-Mantilla <daniel.henry.mantilla@gmail.com>",
 ]
@@ -34,7 +34,7 @@ categories = [
 
 [dependencies.proc_macros]
 package = "with_builtin_macros-proc_macros"
-version = "0.1.0-rc3"  # Keep in sync with `src/Cargo.toml`
+version = "0.1.0"  # Keep in sync with `src/Cargo.toml`
 path = "src"
 
 [workspace]

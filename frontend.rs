@@ -196,7 +196,7 @@ pub mod builtin_macros {
 /// Alternative to [`with_builtin!`] with more convenient syntax.
 ///
 /// Within the scope of the macro call, any
-/// [built-in macro][`builtin_macros`] invocation surrounded in `${ ... }`
+/// [built-in macro][`builtin_macros`] invocation surrounded in `#{ ... }`
 /// will be eagerly expanded.
 ///
 /// ## Example
